@@ -19,17 +19,27 @@ export default class SearchField extends React.Component {
 
     handleSubmit(event) {
         event.preventDefault();
-        let searchLink = links.searchEndpoint +'?q=' + this.state.value.replace(/\s/g, "+")+ '&type=' + this.props.type;
+        let searchLink = links.searchEndpoint + '?q=' + this.state.value.replace(/\s/g, "+") + '&type=' + this.props.pass.type + '&limit=' + this.props.pass.limit;
         fetch(searchLink, {
             method: 'get',
             type: 'no-cors',
             headers: {
                 "Accept": "application/json",
                 "Content-Type": "application/json",
-                "Authorization":" Bearer "+  this.props.accessTokenToPass
+                "Authorization": " Bearer " + this.props.pass.accessTokenToPass
             }
         })
-            .then(response => (console.log(response)));
+            .then(function(response) {
+                return response.json();
+            }).then(function(data) {
+            console.log(data);
+            }).catch(function (err) {
+            console.log(err);
+            localStorage.clear();
+            });
+
+
+
     }
 
     render() {

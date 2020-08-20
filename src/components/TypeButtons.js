@@ -7,39 +7,21 @@ class TypesButtons extends Component {
             selectedOption: this.props.type
         };
     }
-
     handleOptionChange = changeEvent => {
-        if ((this.state.selectedOption && changeEvent.target.value) === 'track'){
-            this.setState({
-                    selectedOption: ''
-                }
-            )
-        }else if (this.state.selectedOption.includes(changeEvent.target.value)){
-            const line1 =  this.state.selectedOption.replace('%2C'+changeEvent.target.value,'')
-            this.setState({
-                selectedOption: line1
-                }
-            )
-            this.props.changeHandler(line1)
-
-            console.log(line1);
-        } else {
-            let line = '';
-            if (this.state.selectedOption === ''){
-                line = changeEvent.target.value;
-            }
-            else {
-                line = this.state.selectedOption + '%2C' + changeEvent.target.value
-            }
-            this.setState({
-                selectedOption: line
-            });
-            this.props.changeHandler(line)
-
-            console.log(line);
+        debugger;
+        let types = this.state.selectedOption.split('%2C')
+        if (this.state.selectedOption.includes(changeEvent.target.value)) {
+            types = types.filter(item => item !== changeEvent.target.value)
+        }else {
+            types.push(changeEvent.target.value)
         }
-    };
-
+        let lineTypes = types.join('%2C');
+        this.setState({
+            selectedOption: lineTypes
+        });
+        this.props.changeHandler(lineTypes);
+        console.log(lineTypes);
+    }
 
     render() {
         return (
