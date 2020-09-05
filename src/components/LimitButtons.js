@@ -1,10 +1,12 @@
 import React,{Component} from "react";
+import {changeSearchLimit, changeSearchType} from "../Actions/Actions";
+import {connect} from "react-redux";
 
 class LimitButtons extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedOption: this.props.limit
+            selectedOption: this.props.searchLimit
         };
     }
 
@@ -12,7 +14,7 @@ class LimitButtons extends Component {
         this.setState({
             selectedOption: changeEvent.target.value
         })
-        this.props.changeHandler(changeEvent.target.value)
+        this.props.changeLimit(changeEvent.target.value)
     };
 
     render() {
@@ -81,4 +83,13 @@ class LimitButtons extends Component {
     }
 }
 
-export default LimitButtons;
+const mapDispatchToProps = (dispatch) => ({
+    changeLimit: (payload) => dispatch(changeSearchLimit(payload)),
+})
+
+function mapStateToProps(state) {
+    const searchLimit  = state.search.searchLimit;
+    return { searchLimit }
+}
+
+export default connect(mapStateToProps,mapDispatchToProps)(LimitButtons)

@@ -1,6 +1,9 @@
 import React from "react";
+import {connect} from "react-redux";
 import {config,links} from "../config";
-export default class SearchField extends React.Component {
+import {searchStart,searchFailure,searchSuccess} from "../Actions/Actions";
+
+class SearchField extends React.Component {
 
     constructor(props) {
         super(props);
@@ -10,6 +13,9 @@ export default class SearchField extends React.Component {
 
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.searchHandlerSucc = this.searchHandlerSucc.bind(this);
+        // this.searchHandlerFail = this.searchHandlerFail.bind(this);
+
     }
 
 
@@ -19,7 +25,10 @@ export default class SearchField extends React.Component {
 
     handleSubmit(event) {
         event.preventDefault();
-        let searchLink = links.searchEndpoint + '?q=' + this.state.value.replace(/\s/g, "+") + '&type=' + this.props.pass.type + '&limit=' + this.props.pass.limit;
+        console.log(this.props.type);
+        let searchLink = links.searchEndpoint + '?q=' + this.state.value.replace(/\s/g, "+") + '&type=' + this.props.type + '&limit=' + this.props.limit;
+        this.props.searchSt();
+        const that = this;
         fetch(searchLink, {
             method: 'get',
             type: 'no-cors',
@@ -32,18 +41,34 @@ export default class SearchField extends React.Component {
             .then(function(response) {
                 return response.json();
             }).then(function(data) {
-            console.log(data);
+            that.searchHandlerSucc(data);
             }).catch(function (err) {
-            console.log(err);
-            localStorage.clear();
+            that.props.searchFail(err)
             });
 
 
 
     }
 
+
+    searchHandlerSucc (data){
+        if (data.error){
+            alert(data.error.message);
+            this.props.searchFail(data.error);
+            if(data.error.status == 401){
+                localStorage.clear();
+            }
+            return;
+        }
+        this.props.searchSuc(data);
+    }
+
+    // searchHandlerFail (e){
+    //     localStorage.clear();
+    //     this.props.searchFail(e);
+    // }
+
     render() {
-        // console.log(this.props.accessTokenToPass);
         return (
             <form onSubmit={this.handleSubmit}>
                 <label>
@@ -55,3 +80,19 @@ export default class SearchField extends React.Component {
         );
     }
 }
+
+const mapDispatchToProps = (dispatch) => ({
+        searchSt: () => dispatch(searchStart()),
+        searchFail: (payload) => dispatch(searchFailure(payload)),
+        searchSuc: (payload) => dispatch(searchSuccess(payload))
+})
+
+function mapStateToProps(state) {
+    const type  = state.search.searchTypes;
+    const limit = state.search.searchLimit;
+    return { type,limit }
+}
+
+export default connect(mapStateToProps,mapDispatchToProps)(SearchField)
+
+

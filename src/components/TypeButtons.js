@@ -1,29 +1,33 @@
 import React,{Component} from "react";
+import {connect} from "react-redux";
+import {changeSearchType} from "../Actions/Actions";
 
 class TypesButtons extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedOption: this.props.type
+            selectedOption: this.props.searchTypes
         };
     }
     handleOptionChange = changeEvent => {
-        debugger;
         let types = this.state.selectedOption.split('%2C')
         if (this.state.selectedOption.includes(changeEvent.target.value)) {
             types = types.filter(item => item !== changeEvent.target.value)
         }else {
             types.push(changeEvent.target.value)
         }
+        if (!types[0]){
+            types.shift();
+        }
         let lineTypes = types.join('%2C');
         this.setState({
             selectedOption: lineTypes
         });
-        this.props.changeHandler(lineTypes);
-        console.log(lineTypes);
+        this.props.changeTypes(lineTypes);
     }
 
     render() {
+        // this.state.selectedOption = this.props.searchTypes;
         return (
             <div className="container">
                 <div className="row mt-5">
@@ -115,4 +119,15 @@ class TypesButtons extends Component {
     }
 }
 
-export default TypesButtons;
+
+
+const mapDispatchToProps = (dispatch) => ({
+    changeTypes: (payload) => dispatch(changeSearchType(payload)),
+})
+
+function mapStateToProps(state) {
+    const searchTypes  = state.search.searchTypes;
+    return { searchTypes }
+}
+
+export default connect(mapStateToProps,mapDispatchToProps)(TypesButtons)

@@ -3,6 +3,13 @@ import '../App.css';
 import { config, links } from '../config';
 import parrot from '../parrot.gif';
 import Header from "./Header";
+import TrackItems from "./track/TrackItems";
+import {connect} from "react-redux";
+import style from './cards.module.css'
+import ArtistItems from "./Artist/ArtistItems";
+import ConnectHOC from "./ConnectHOC";
+import SearchField from "./SearchField";
+import SearchResult from "./SearchResult";
 
 class SpotifyAu extends React.Component{
     constructor(props) {
@@ -12,7 +19,8 @@ class SpotifyAu extends React.Component{
             message : 'Hello spotify, are you authorized?',
             accessToken: '',
             refreshToken: '',
-            tokenType: ''
+            tokenType: '',
+            isLoading : this.props.loading
         }
         this.handleButton = this.handleButton.bind(this);
     }
@@ -62,11 +70,19 @@ class SpotifyAu extends React.Component{
 
     handleButton (){
         console.log(this.state);
+        console.log(this.props)
     }
 
     render (){
         const accessToken = this.state.accessToken;
-        console.log(accessToken);
+        let wrSearch;
+        if (this.props.data){
+            const WrappedSearch = ConnectHOC(SearchResult,this.props.data) ;
+            wrSearch = <WrappedSearch/>
+        }else{
+            wrSearch=''
+        };
+
         return (
             <div>
                 <div>
@@ -79,10 +95,26 @@ class SpotifyAu extends React.Component{
                 <div>
                     {this.state.isAuth ? <img src={parrot} alt="This is an animated gif image, but it does not move"/> :<a href={links.authLink}>login via spotify</a>}
                 </div>
+                <div>
+                    { this.props.loading ? (
+                        <div>Searching</div>
+                        ):
+                        (
+                            <div>
+                                <div>{wrSearch}</div>
+                            </div>
+                            )
+                    }
+                </div>
             </div>
         );
     }
 }
 
-export default SpotifyAu;
+function mapStateToProps(state) {
+    const data  = state.search.data;
+    const loading = state.search.loading;
+    return { data,loading }
+}
+export default connect(mapStateToProps)(SpotifyAu)
 

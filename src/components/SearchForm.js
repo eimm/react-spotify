@@ -2,6 +2,8 @@ import SearchField from "./SearchField";
 import React from "react";
 import TypesButtons from "./TypeButtons";
 import LimitButtons from "./LimitButtons";
+import {searchFailure, searchStart, searchSuccess} from "../Actions/Actions";
+import {connect} from "react-redux";
 
 export default class SearchForm extends React.Component{
     constructor(props) {
@@ -40,3 +42,4 @@ export default class SearchForm extends React.Component{
         )
     }
 }
+
