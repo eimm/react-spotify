@@ -7,4 +7,5 @@ export const config ={
 export const links = {
     authLink: `https://accounts.spotify.com/ru/authorize?client_id=${config.appId}&response_type=code&redirect_uri=${config.redirectLink}`,
     tokenLink: `https://accounts.spotify.com/api/token`,
+    searchEndpoint: 'https://api.spotify.com/v1/search'
 }
