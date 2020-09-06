@@ -2,16 +2,14 @@ import React from "react";
 import {connect} from "react-redux";
 import {config,links} from "../config";
 import {searchStart,searchFailure,searchSuccess} from "../Actions/Actions";
+import SearchFieldReduxForm from "./SearchFieldReduxForm";
+import {formValueSelector} from "redux-form";
 
 class SearchField extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            value: '',
-        };
 
-        this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.searchHandlerSucc = this.searchHandlerSucc.bind(this);
         // this.searchHandlerFail = this.searchHandlerFail.bind(this);
@@ -19,15 +17,13 @@ class SearchField extends React.Component {
     }
 
 
-    handleChange(event) {
-        this.setState({value: event.target.value});
-    }
-
-    handleSubmit(event) {
-        event.preventDefault();
-        console.log(this.props.type);
-        let searchLink = links.searchEndpoint + '?q=' + this.state.value.replace(/\s/g, "+") + '&type=' + this.props.type + '&limit=' + this.props.limit;
-        this.props.searchSt();
+    handleSubmit() {
+        let typeStr = this.formTypeString(this.props.typeArtist,this.props.typeTrack,this.props.typePlaylist,this.props.typeAlbum)
+        let searchLink = links.searchEndpoint + '?q=' + this.props.hasSearchValue.replace(/\s/g, "+") + '&type=' + typeStr + '&limit=' + this.props.hasLimit;
+        if (this.props.searchLinkFromState === searchLink){
+            return;
+        }
+        this.props.searchSt(searchLink);
         const that = this;
         fetch(searchLink, {
             method: 'get',
@@ -42,14 +38,8 @@ class SearchField extends React.Component {
                 return response.json();
             }).then(function(data) {
             that.searchHandlerSucc(data);
-            }).catch(function (err) {
-            that.props.searchFail(err)
             });
-
-
-
     }
-
 
     searchHandlerSucc (data){
         if (data.error){
@@ -63,26 +53,35 @@ class SearchField extends React.Component {
         this.props.searchSuc(data);
     }
 
-    // searchHandlerFail (e){
-    //     localStorage.clear();
-    //     this.props.searchFail(e);
-    // }
+    formTypeString (artist, track, playlist, album) {
+        let arr = [];
+        if (artist) {
+            arr.push('artist')
+        }
+        if (track) {
+            arr.push('track')
+        }
+        if (playlist) {
+            arr.push('playlist')
+        }
+        if (album) {
+            arr.push('album')
+        }
+        let lineTypes = arr.join('%2C')
+        return(lineTypes)
+    }
 
     render() {
         return (
-            <form onSubmit={this.handleSubmit}>
-                <label>
-                    Search:
-                    <input type="text" value={this.state.value} onChange={this.handleChange} />
-                </label>
-                <input type="submit" value="Submit" />
-            </form>
+            <div>
+                <SearchFieldReduxForm onSubmit={this.handleSubmit}/>
+            </div>
         );
     }
 }
 
 const mapDispatchToProps = (dispatch) => ({
-        searchSt: () => dispatch(searchStart()),
+        searchSt: (payload) => dispatch(searchStart(payload)),
         searchFail: (payload) => dispatch(searchFailure(payload)),
         searchSuc: (payload) => dispatch(searchSuccess(payload))
 })
@@ -90,8 +89,29 @@ const mapDispatchToProps = (dispatch) => ({
 function mapStateToProps(state) {
     const type  = state.search.searchTypes;
     const limit = state.search.searchLimit;
-    return { type,limit }
+    const searchLinkFromState = state.search.searchLink;
+    return { type,limit,searchLinkFromState}
 }
+const selectorValue = formValueSelector('searchFieldReduxForm');
+const selectorLimit = formValueSelector('limitRadio');
+const selectorType = formValueSelector('typeButtons')
+SearchField = connect(state => {
+    const hasSearchValue = selectorValue(state, 'SearchField')
+    const hasLimit = selectorLimit(state,'limit')
+    const typeArtist =selectorType(state,'artist')
+    const typeAlbum = selectorType(state,'album')
+    const typeTrack = selectorType(state,'track')
+    const typePlaylist = selectorType(state,'playlist')
+    return {
+        hasSearchValue,
+        hasLimit,
+        typeArtist,
+        typeAlbum,
+        typeTrack,
+        typePlaylist
+    }
+})(SearchField)
+
 
 export default connect(mapStateToProps,mapDispatchToProps)(SearchField)
 

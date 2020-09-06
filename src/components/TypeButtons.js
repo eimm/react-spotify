@@ -1,33 +1,7 @@
 import React,{Component} from "react";
-import {connect} from "react-redux";
-import {changeSearchType} from "../Actions/Actions";
+import { Field, reduxForm } from 'redux-form';
 
-class TypesButtons extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            selectedOption: this.props.searchTypes
-        };
-    }
-    handleOptionChange = changeEvent => {
-        let types = this.state.selectedOption.split('%2C')
-        if (this.state.selectedOption.includes(changeEvent.target.value)) {
-            types = types.filter(item => item !== changeEvent.target.value)
-        }else {
-            types.push(changeEvent.target.value)
-        }
-        if (!types[0]){
-            types.shift();
-        }
-        let lineTypes = types.join('%2C');
-        this.setState({
-            selectedOption: lineTypes
-        });
-        this.props.changeTypes(lineTypes);
-    }
-
-    render() {
-        // this.state.selectedOption = this.props.searchTypes;
+let TypesButtons = props => {
         return (
             <div className="container">
                 <div className="row mt-5">
@@ -35,12 +9,11 @@ class TypesButtons extends Component {
                         <form>
                             <div className="form-check">
                                 <label>
-                                    <input
+                                    <Field
                                         type="checkbox"
-                                        name="react-tips"
-                                        value="album"
-                                        checked={this.state.selectedOption.includes('album')}
-                                        onChange={this.handleOptionChange}
+                                        name="album"
+                                        id="album"
+                                        component="input"
                                         className="form-check-input"
                                     />
                                     Album
@@ -48,12 +21,11 @@ class TypesButtons extends Component {
                             </div>
                             <div className="form-check">
                                 <label>
-                                    <input
+                                    <Field
                                         type="checkbox"
-                                        name="react-tips"
-                                        value="artist"
-                                        checked={this.state.selectedOption.includes('artist')}
-                                        onChange={this.handleOptionChange}
+                                        name="artist"
+                                        id="artist"
+                                        component="input"
                                         className="form-check-input"
                                     />
                                     Artist
@@ -61,12 +33,11 @@ class TypesButtons extends Component {
                             </div>
                             <div className="form-check">
                                 <label>
-                                    <input
+                                    <Field
                                         type="checkbox"
-                                        name="react-tips"
-                                        value="track"
-                                        checked={this.state.selectedOption.includes('track')}
-                                        onChange={this.handleOptionChange}
+                                        name="track"
+                                        id="track"
+                                        component="input"
                                         className="form-check-input"
                                     />
                                     Track
@@ -74,60 +45,50 @@ class TypesButtons extends Component {
                             </div>
                             <div className="form-check">
                                 <label>
-                                    <input
+                                    <Field
                                         type="checkbox"
-                                        name="react-tips"
-                                        value="playlist"
-                                        checked={this.state.selectedOption.includes('playlist')}
-                                        onChange={this.handleOptionChange}
+                                        name="playlist"
+                                        id="playlist"
+                                        component="input"
                                         className="form-check-input"
                                     />
                                     Playlist
                                 </label>
                             </div>
-                            <div className="form-check">
-                                <label>
-                                    <input
-                                        type="checkbox"
-                                        name="react-tips"
-                                        value="show"
-                                        checked={this.state.selectedOption.includes('show')}
-                                        onChange={this.handleOptionChange}
-                                        className="form-check-input"
-                                    />
-                                    Show
-                                </label>
-                            </div>
-                            <div className="form-check">
-                                <label>
-                                    <input
-                                        type="checkbox"
-                                        name="react-tips"
-                                        value="episode"
-                                        checked={this.state.selectedOption.includes('episode')}
-                                        onChange={this.handleOptionChange}
-                                        className="form-check-input"
-                                    />
-                                    Episode
-                                </label>
-                            </div>
+                            {/*<div className="form-check">*/}
+                            {/*    <label>*/}
+                            {/*        <input*/}
+                            {/*            type="checkbox"*/}
+                            {/*            name="react-tips"*/}
+                            {/*            value="show"*/}
+                            {/*            checked={this.state.selectedOption.includes('show')}*/}
+                            {/*            onChange={this.handleOptionChange}*/}
+                            {/*            className="form-check-input"*/}
+                            {/*        />*/}
+                            {/*        Show*/}
+                            {/*    </label>*/}
+                            {/*</div>*/}
+                            {/*<div className="form-check">*/}
+                            {/*    <label>*/}
+                            {/*        <input*/}
+                            {/*            type="checkbox"*/}
+                            {/*            name="react-tips"*/}
+                            {/*            value="episode"*/}
+                            {/*            checked={this.state.selectedOption.includes('episode')}*/}
+                            {/*            onChange={this.handleOptionChange}*/}
+                            {/*            className="form-check-input"*/}
+                            {/*        />*/}
+                            {/*        Episode*/}
+                            {/*    </label>*/}
+                            {/*</div>*/}
                         </form>
                     </div>
                 </div>
             </div>
         );
-    }
+
 }
 
-
-
-const mapDispatchToProps = (dispatch) => ({
-    changeTypes: (payload) => dispatch(changeSearchType(payload)),
-})
-
-function mapStateToProps(state) {
-    const searchTypes  = state.search.searchTypes;
-    return { searchTypes }
-}
-
-export default connect(mapStateToProps,mapDispatchToProps)(TypesButtons)
+export default reduxForm({
+    form: 'typeButtons'  // a unique identifier for this form
+})(TypesButtons)

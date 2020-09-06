@@ -1,5 +1,7 @@
 import { combineReducers } from 'redux'
 import search from "./MiscReducer";
+import { reducer as reduxFormReducer } from 'redux-form';
+
 
 
 export const initialState = {
@@ -7,12 +9,13 @@ export const initialState = {
     data : {},
     error : '',
     searchTypes : 'track',
-    searchLimit: '20'
+    limit: '20'
 };
 
 
 
 
 export default combineReducers({
-    search
+    search,
+    form: reduxFormReducer
 })

@@ -37,8 +37,9 @@ export const addNewPlaylist = body => ({
     body
 })
 
-export const searchStart = () => ({
+export const searchStart = (data) => ({
     type: SEARCH_START,
+    data
 })
 
 export const searchFailure = (e) => ({

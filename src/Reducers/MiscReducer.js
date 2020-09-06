@@ -9,7 +9,8 @@ const search = (state = initialState, action) => {
         case SEARCH_START:
             return {
                 ...state,
-                loading: true
+                loading: true,
+                searchLink: action.data
             }
         case SEARCH_SUC:
             return {
